@@ -44,7 +44,7 @@ def index_to_position(index: Index, strides: Strides) -> int:
     """
 
     # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    return int(np.dot(index, strides))
 
 
 def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
@@ -61,7 +61,9 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
 
     """
     # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    for i in range(len(shape) - 1, -1, -1):
+        out_index[i] = ordinal % shape[i]
+        ordinal //= shape[i]
 
 
 def broadcast_index(
@@ -84,7 +86,20 @@ def broadcast_index(
         None
     """
     # TODO: Implement for Task 2.2.
-    raise NotImplementedError("Need to implement for Task 2.2")
+    # 计算维度差异
+    offset = len(big_shape) - len(shape)
+
+    # 遍历小张量的每个维度
+    for i in range(len(shape)):
+        # 对应大张量中的维度索引
+        big_i = i + offset
+        # 如果小张量该维度为1，使用索引0（广播规则）
+        # 否则使用大张量对应位置的索引
+        if shape[i] == 1:
+            out_index[i] = 0
+        else:
+            out_index[i] = big_index[big_i]
+    
 
 
 def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
@@ -102,7 +117,20 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
         IndexingError : if cannot broadcast
     """
     # TODO: Implement for Task 2.2.
-    raise NotImplementedError("Need to implement for Task 2.2")
+    # 获取较长的形状长度
+    max_len = max(len(shape1), len(shape2))
+    
+    # 右对齐两个形状（在左侧补1）
+    s1 = [1] * (max_len - len(shape1)) + list(shape1)
+    s2 = [1] * (max_len - len(shape2)) + list(shape2)
+
+    result = []
+    for i in range(max_len):
+        if s1[i] == s2[i] or s1[i] == 1 or s2[i] == 1:
+            result.append(max(s1[i], s2[i]))
+        else:
+            raise IndexingError(f"Cannot broadcast shapes {shape1} and {shape2}.")
+    return tuple(result)
 
 
 def strides_from_shape(shape: UserShape) -> UserStrides:
@@ -223,7 +251,9 @@ class TensorData:
         ), f"Must give a position to each dimension. Shape: {self.shape} Order: {order}"
 
         # TODO: Implement for Task 2.1.
-        raise NotImplementedError("Need to implement for Task 2.1")
+        new_shape = tuple(self.shape[i] for i in order)
+        new_strides = tuple(self.strides[i] for i in order)
+        return TensorData(self._storage, new_shape, new_strides)
 
     def to_string(self) -> str:
         s = ""
