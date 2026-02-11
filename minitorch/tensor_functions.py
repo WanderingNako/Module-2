@@ -204,7 +204,7 @@ class LT(Function):
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, Tensor]:
         # TODO: Implement for Task 2.4.
         shape_a, shape_b = ctx.saved_values
-        return zeros(shape_a), zeros(shape_b)
+        return zeros(shape_a, backend=grad_output.backend), zeros(shape_b, backend=grad_output.backend)
 
 
 class EQ(Function):
@@ -218,7 +218,7 @@ class EQ(Function):
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, Tensor]:
         # TODO: Implement for Task 2.4.
         shape_a, shape_b = ctx.saved_values
-        return zeros(shape_a), zeros(shape_b)
+        return zeros(shape_a, backend=grad_output.backend), zeros(shape_b, backend=grad_output.backend)
 
 
 class IsClose(Function):

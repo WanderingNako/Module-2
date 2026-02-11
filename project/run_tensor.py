@@ -39,10 +39,10 @@ class Linear(minitorch.Module):
         M = x.shape[-2]
         K = x.shape[-1]
         N = self.out_size
-        A = x.view(M, 1, K)
-        B = self.weights.value.view(1, N, K)
+        A = x.contiguous().view(M, 1, K)
+        B = self.weights.value.contiguous().view(1, N, K)
         C = A * B
-        D = C.sum(-1).view(M, N) + self.bias.value
+        D = C.sum(-1).contiguous().view(M, N) + self.bias.value
         return D
 
 
